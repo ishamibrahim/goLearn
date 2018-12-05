@@ -89,6 +89,42 @@ func variardicCheck() {
 	printPars(pars...)
 }
 
+func getSeq() func() int {
+	n := 5
+	return func() int {
+		n++
+		return n
+	}
+
+}
+func closureCheck() {
+	nextNum := getSeq()
+	fmt.Println(nextNum())
+	fmt.Println(nextNum())
+	fmt.Println(nextNum())
+}
+
+func facto(n int) int {
+	if n == 0 {
+		return 1
+	}
+	fmt.Println("Recursive call No. ", n)
+	return n * facto(n-1)
+}
+func recursionCheck() {
+	fmt.Println(facto(8))
+}
+
+func changeVal(i int) {
+	i = 0
+}
+func pointerCheck() {
+	i := 345
+
+	fmt.Println("Value of i : ", i)
+
+}
+
 func main() {
-	variardicCheck()
+	recursionCheck()
 }
