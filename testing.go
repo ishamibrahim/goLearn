@@ -211,6 +211,101 @@ func errorCheck(b int) (float64, error) {
 	return float64(b / 10), nil
 }
 
+//////////////////////////////////////
+type argError struct {
+	arg  int
+	prob string
+}
+
+func (e *argError) Error() string {
+	return fmt.Sprintf("%d - %s", e.arg, e.prob)
+}
+func oddSquare(arg int) (int, error) {
+
+	if arg%2 == 0 {
+		return -1, &argError{arg, "Cannot continue with an even number"}
+	}
+	return arg * arg, nil
+
+}
+func customErrorCheck() {
+	for _, i := range []int{2, 3, 5, 6, 8, 9} {
+		if j, errMsg := oddSquare(i); errMsg != nil {
+			fmt.Println("FAILED: ", errMsg)
+		} else {
+			fmt.Println("SUCCESS: ", j)
+		}
+	}
+}
+
+//////////////////////////////////////
+func printMany(st int, rtype string) {
+	for i := 0; i < st; i++ {
+		fmt.Println("Calling ", rtype, " Goroutine no : ", i)
+	}
+}
+func goroutineCheck() {
+	printMany(4, "DIRECT")
+	go printMany(12, "A")
+	go printMany(10, "B")
+	fmt.Scanln()
+	fmt.Println("done")
+}
+
+//////////////////////////////////////
+func changeChan(achan chan int, somval int) {
+	fmt.Println("Channel : ", somval)
+	achan <- somval
+}
+func channelCheck() {
+	//wg := new(sync.WaitGroup)
+	somchan := make(chan int, 2)
+
+	changeChan(somchan, 5)
+	changeChan(somchan, 20)
+
+	firstval := <-somchan
+	secondval := <-somchan
+	fmt.Println(firstval)
+	fmt.Println(secondval)
+	fmt.Scanln()
+	fmt.Println("done")
+
+}
+
+//////////////////////////////////////
+func bufferChancheck() {
+	somchan := make(chan string, 3)
+
+	somchan <- "First"
+	somchan <- "Second"
+	somchan <- "third"
+
+	fmt.Println(<-somchan)
+	fmt.Println(<-somchan)
+	fmt.Println(<-somchan)
+}
+
+//////////////////////////////////////
+func workerWaits(b chan int) {
+	fmt.Println("Starting ..")
+	for i := 0; i < 5; i++ {
+		fmt.Println("Doing...", i)
+	}
+	fmt.Println("Done.")
+	b <- 3
+}
+func syncChannelCheck() {
+	done := make(chan int, 1)
+	go workerWaits(done)
+
+	// If the below line is removed. The go routine runs asyncrounously.
+	// The below line makes sure that the program waits till it gets the value for 'done'
+	<-done
+}
+
+//////////////////////////////////////
+
 func main() {
-	fmt.Println(errorCheck(0))
+	syncChannelCheck()
 }
