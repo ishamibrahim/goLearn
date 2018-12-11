@@ -305,7 +305,23 @@ func syncChannelCheck() {
 }
 
 //////////////////////////////////////
+func setChannel(v chan<- int, val int) {
+	v <- val
+	//fmt.Println("The value of the channel set is : ", <-v)
+}
+func getChannel(v <-chan int) {
+	val := <-v
+
+	fmt.Println("The value of the channel got is : ", val)
+}
+
+func channelDirectionCheck() {
+	v := make(chan int, 1)
+	setChannel(v, 31)
+	getChannel(v)
+
+}
 
 func main() {
-	syncChannelCheck()
+	channelDirectionCheck()
 }
