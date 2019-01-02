@@ -3,7 +3,10 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math"
+	"os/exec"
+	"time"
 )
 
 const s string = "I'm Isham"
@@ -322,6 +325,60 @@ func channelDirectionCheck() {
 
 }
 
+//////////////////////////////////////
+func runSystemCommand() {
+	cmd := exec.Command("git", "describe", "--all")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Fatalf("Failed: %s", err)
+	}
+	fmt.Printf("The output is %s\n", out)
+}
+
+/////////////////////////////////////////
+
+func selectChannels() {
+	c1 := make(chan string)
+	c2 := make(chan string)
+	go func() {
+		time.Sleep(1 * time.Second)
+		c1 <- "one"
+	}()
+	go func() {
+		time.Sleep(2 * time.Second)
+		c2 <- "two"
+	}()
+
+	for i := 0; i < 2; i++ {
+		select {
+		case msg1 := <-c1:
+			fmt.Println("received", msg1)
+		case msg2 := <-c2:
+			fmt.Println("received", msg2)
+		}
+	}
+}
+
+func withoutSelectChannels() {
+	c1 := make(chan string)
+	c2 := make(chan string)
+
+	go func() {
+		time.Sleep(2 * time.Second)
+		c2 <- "two"
+	}()
+	go func() {
+		time.Sleep(1 * time.Second)
+		c1 <- "one"
+	}()
+
+	msg1 := <-c1
+	fmt.Println("received", msg1)
+	msg2 := <-c2
+	fmt.Println("received", msg2)
+
+}
+
 func main() {
-	channelDirectionCheck()
+	withoutSelectChannels()
 }
