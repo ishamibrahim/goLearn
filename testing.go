@@ -379,6 +379,152 @@ func withoutSelectChannels() {
 
 }
 
+/////////////////////////////////////////
+
+func channelTimeout() {
+	c1 := make(chan string, 1)
+	go func() {
+		time.Sleep(2 * time.Second)
+		c1 <- "result 1"
+	}()
+	select {
+	case res := <-c1:
+		fmt.Println(res)
+	case <-time.After(1 * time.Second):
+		fmt.Println("timeout 1")
+	}
+
+	c2 := make(chan string, 1)
+	go func() {
+		time.Sleep(2 * time.Second)
+		c2 <- "result 2"
+	}()
+	select {
+	case res := <-c2:
+		fmt.Println(res)
+	case <-time.After(3 * time.Second):
+		fmt.Println("timeout 2")
+	}
+}
+
+/////////////////////////////////////////
+
+func nonBlockingChannels() {
+	messages := make(chan string)
+	signals := make(chan bool)
+
+	select {
+	case msg := <-messages:
+		fmt.Println("received message", msg)
+	default:
+		fmt.Println("no message received")
+	}
+
+	msg := "hi"
+	select {
+	case messages <- msg:
+		fmt.Println("sent message", msg)
+	default:
+		fmt.Println("no message sent")
+	}
+
+	//fmt.Println("Message is  ", <-messages)
+
+	select {
+	case msg := <-messages:
+		fmt.Println("received message", msg)
+	case sig := <-signals:
+		fmt.Println("received signal", sig)
+	default:
+		fmt.Println("no activity")
+	}
+}
+
+/////////////////////////////////////////
+
+func closingChannels() {
+	messages := make(chan int, 2)
+	done := make(chan bool)
+
+	go func() {
+		for {
+			m, more := <-messages
+
+			if more {
+				fmt.Println("Recieved message", m)
+			} else {
+				fmt.Println("recieved all messages")
+				done <- true
+				break
+			}
+		}
+	}()
+
+	for i := 0; i < 4; i++ {
+		messages <- i
+		fmt.Printf("Message %d sent\n", i)
+	}
+	close(messages)
+	fmt.Println("Sent all messages")
+	<-done
+}
+
+/////////////////////////////////////////
+
+func rangeChannel() {
+	numbers := make(chan int, 5)
+
+	for i := 0; i < 5; i++ {
+		numbers <- i
+	}
+	close(numbers)
+
+	for num := range numbers {
+		fmt.Println("Recieving  ", num)
+	}
+}
+
+/////////////////////////////////////////
+
+func timerCheck() {
+	timer1 := time.NewTimer(3 * time.Second)
+	done := make(chan bool)
+
+	<-timer1.C
+
+	fmt.Println("Timer1 expired now")
+
+	timer2 := time.NewTimer(time.Second)
+	go func() {
+		<-timer2.C
+		fmt.Println("Timer2 expired now")
+		done <- true
+	}()
+
+	//This is used to stop a timer midway
+	stop2 := timer2.Stop()
+	if stop2 {
+		fmt.Println("Timer2 Stopped")
+	}
+
+}
+
+/////////////////////////////////////////
+
+func tickerCheck() {
+	ticker := time.NewTicker(time.Second)
+	r := "Random wod"
+	go func() {
+		for t := range ticker.C {
+			fmt.Println("Ticking at ", t)
+		}
+	}()
+
+	time.Sleep(10 * time.Second)
+	ticker.Stop()
+	fmt.Println("Ticker stopped.", r)
+}
+
 func main() {
-	withoutSelectChannels()
+	tickerCheck()
 }
