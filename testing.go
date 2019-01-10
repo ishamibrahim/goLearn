@@ -525,6 +525,73 @@ func tickerCheck() {
 	fmt.Println("Ticker stopped.", r)
 }
 
+/////////////////////////////////////////
+func worker(id int, jobs <-chan int, results chan<- int) {
+	for j := range jobs {
+		fmt.Println("Job", j, "Has started by worker ", id)
+		time.Sleep(time.Second)
+		fmt.Println("Job", j, "Has ended by worker", id)
+		results <- j * 10
+	}
+}
+
+func workerPoolCheck() {
+	jobs := make(chan int)
+	results := make(chan int)
+
+	for wId := 0; wId < 5; wId++ {
+		go worker(wId, jobs, results)
+	}
+
+	for jNum := 1; jNum <= 5; jNum++ {
+		jobs <- jNum
+	}
+	for rC := 1; rC <= 5; rC++ {
+		fmt.Println("Rpinting result :", <-results)
+	}
+
+	close(jobs)
+}
+
+/////////////////////////////////////////
+
+func rateLimiting() {
+	requests := make(chan int, 5)
+	for i := 0; i < 5; i++ {
+		requests <- i
+	}
+	close(requests)
+
+	limiter := time.Tick(200 * time.Millisecond)
+
+	for req := range requests {
+		<-limiter
+		fmt.Println("Request number ", req, time.Now())
+	}
+
+	burstyLim := make(chan time.Time, 3)
+
+	burstyLim <- time.Now()
+	burstyLim <- time.Now()
+	burstyLim <- time.Now()
+
+	go func() {
+		for t := range time.Tick(200 * time.Millisecond) {
+			burstyLim <- t
+		}
+	}()
+
+	burstyReq := make(chan int, 6)
+	for i := 0; i < 6; i++ {
+		burstyReq <- i
+	}
+	for burst := range burstyReq {
+		<-burstyLim
+		fmt.Println("Bursty Request number ", burst, time.Now())
+	}
+	close(burstyLim)
+}
+
 func main() {
-	tickerCheck()
+	rateLimiting()
 }
