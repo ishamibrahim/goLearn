@@ -7,6 +7,7 @@ import (
 	"math"
 	"math/rand"
 	"os/exec"
+	"sort"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -743,6 +744,20 @@ func statefulGoRoutineCheck() {
 	fmt.Println("writeOps:", writeOpsFinal)
 }
 
+///////////////////////////////////////////////////////////
+
+func sortCheck() {
+	names := []string{"Bhim", "Arjun", "Nakul", "Yudhistir", "Sahadev"}
+	fmt.Println("Unsorted names", names)
+	sort.Strings(names)
+	fmt.Println("Sorted names", names)
+
+	fibonacci := []int{1, 0, 8, 2, 1, 5, 3}
+	fmt.Println("unsorted fibonacci", fibonacci)
+	sort.Ints(fibonacci)
+	fmt.Println("Sorted fibonacci ", fibonacci)
+
+}
 func main() {
-	statefulGoRoutineCheck()
+	sortCheck()
 }
