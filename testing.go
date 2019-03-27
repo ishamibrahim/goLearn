@@ -7,7 +7,10 @@ import (
 	"math"
 	"math/rand"
 	"os/exec"
+	"path"
+	"path/filepath"
 	"sort"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -37,7 +40,7 @@ func typeCheck() {
 
 //////////////////////////////////////
 func arrayCheck() {
-	var a [1]int
+	var a [5]int
 	fmt.Println("emp:", a)
 }
 
@@ -758,6 +761,44 @@ func sortCheck() {
 	fmt.Println("Sorted fibonacci ", fibonacci)
 
 }
+
+///////////////////////////////////////////////////////////
+
+type planet struct {
+}
+
+func sortByFuncCheck() {
+
+}
+
+//getInputFilePath get input template file path
+func getInputFilePath(workDir, fileName string) string {
+	ext := filepath.Ext(fileName)
+	fileName = strings.TrimRight(fileName, ext)
+	epoch := time.Now().Unix()
+	fileName = fmt.Sprintf("%s_%d%s", fileName, epoch, ext)
+	return path.Join(workDir, fileName)
+}
+
+//getOutputFilePath get output file path
+func getOutputFilePath(inputFilePath string) string {
+	ext := filepath.Ext(inputFilePath)
+	filePath := strings.TrimRight(inputFilePath, ext)
+	ouptputFilePath := filePath + "_out" + ext
+	return ouptputFilePath
+}
+
+func reverselist(fl []string) {
+	lenList := len(fl)
+	for i := 0; i < lenList/2; i++ {
+		fl[i], fl[lenList-1-i] = fl[lenList-1-i], fl[i]
+	}
+}
+
 func main() {
-	sortCheck()
+	f := []string{"one", "two", "three", "four", "five", "six", "seven"}
+
+	fmt.Println("Before reverse     ", f)
+	reverselist(f)
+	fmt.Println("After reverse     ", f)
 }
