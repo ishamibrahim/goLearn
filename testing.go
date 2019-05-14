@@ -790,6 +790,8 @@ func sortByFuncCheck() {
 	fmt.Println(planets)
 }
 
+///////////////////////////////////////////////////////////
+
 //getInputFilePath get input template file path
 func getInputFilePath(workDir, fileName string) string {
 	ext := filepath.Ext(fileName)
