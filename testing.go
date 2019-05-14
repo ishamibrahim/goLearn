@@ -147,7 +147,7 @@ func changePtr(i *int) {
 }
 func pointerCheck() {
 	var b = 345
-	fmt.Println("Value of ib: ", b)
+	fmt.Println("Value of b: ", b)
 	changeVal(b)
 	fmt.Println("Value after changing b : ", b)
 	changePtr(&b)
@@ -268,17 +268,16 @@ func changeChan(achan chan int, somval int) {
 	achan <- somval
 }
 func channelCheck() {
-	//wg := new(sync.WaitGroup)
-	somchan := make(chan int, 2)
+	somchan := make(chan int)
 
-	changeChan(somchan, 5)
-	changeChan(somchan, 20)
+	go changeChan(somchan, 5)
+	go changeChan(somchan, 20)
 
 	firstval := <-somchan
 	secondval := <-somchan
 	fmt.Println(firstval)
 	fmt.Println(secondval)
-	fmt.Scanln()
+	//fmt.Scanln()
 	fmt.Println("done")
 
 }
@@ -306,7 +305,7 @@ func workerWaits(b chan int) {
 	b <- 3
 }
 func syncChannelCheck() {
-	done := make(chan int, 1)
+	done := make(chan int)
 	go workerWaits(done)
 
 	// If the below line is removed. The go routine runs asyncrounously.
@@ -352,7 +351,7 @@ func selectChannels() {
 		c1 <- "one"
 	}()
 	go func() {
-		time.Sleep(2 * time.Second)
+		time.Sleep(1 * time.Second)
 		c2 <- "two"
 	}()
 
@@ -489,6 +488,7 @@ func rangeChannel() {
 	for num := range numbers {
 		fmt.Println("Recieving  ", num)
 	}
+	fmt.Scanln()
 }
 
 /////////////////////////////////////////
@@ -527,7 +527,7 @@ func tickerCheck() {
 		}
 	}()
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 	ticker.Stop()
 	fmt.Println("Ticker stopped.", r)
 }
@@ -556,7 +556,6 @@ func workerPoolCheck() {
 	for rC := 1; rC <= 5; rC++ {
 		fmt.Println("Rpinting result :", <-results)
 	}
-
 	close(jobs)
 }
 
@@ -569,7 +568,7 @@ func rateLimiting() {
 	}
 	close(requests)
 
-	limiter := time.Tick(200 * time.Millisecond)
+	limiter := time.Tick(time.Second)
 
 	for req := range requests {
 		<-limiter
@@ -609,7 +608,7 @@ func atomicCounter() {
 
 				atomic.AddUint64(&ops, 1)
 
-				time.Sleep(time.Millisecond)
+				time.Sleep(1000 * time.Millisecond)
 			}
 		}()
 	}
@@ -620,7 +619,7 @@ func atomicCounter() {
 }
 
 ///////////////////////////////////////////////////////////
-
+// To access data accross goroutines
 func mutexCheck() {
 	var state = make(map[int]int)
 	var mutex = &sync.Mutex{}
@@ -765,10 +764,30 @@ func sortCheck() {
 ///////////////////////////////////////////////////////////
 
 type planet struct {
+	name string
+	size float64
+}
+type bySize []planet
+
+func (p bySize) Len() int {
+	return len(p)
+}
+
+func (p bySize) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+func (p bySize) Less(i, j int) bool {
+	return p[i].size < p[j].size
 }
 
 func sortByFuncCheck() {
+	mercury := planet{name: "pluto", size: 2439.7}
+	earth := planet{name: "earth", size: 6371}
+	jupiter := planet{name: "jupiter", size: 69911}
+	planets := []planet{jupiter, mercury, earth}
 
+	sort.Sort(bySize(planets))
+	fmt.Println(planets)
 }
 
 //getInputFilePath get input template file path
@@ -796,9 +815,5 @@ func reverselist(fl []string) {
 }
 
 func main() {
-	f := []string{"one", "two", "three", "four", "five", "six", "seven"}
-
-	fmt.Println("Before reverse     ", f)
-	reverselist(f)
-	fmt.Println("After reverse     ", f)
+	sortByFuncCheck()
 }
