@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"log"
 	"math"
 	"math/rand"
+	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
@@ -816,6 +818,55 @@ func reverselist(fl []string) {
 	}
 }
 
+///////////////////////////////////////////////////////////
+
+func panicCheck() {
+	mylist := []int{1, 2, 3, 4, 0}
+	total := 100
+
+	for _, val := range mylist {
+		if val == 0 {
+			panic(fmt.Sprintf("Cannot divide by zero,Total : %d", total))
+		}
+		total = total / val
+	}
+	fmt.Println("Total : ", total)
+
+}
+
+///////////////////////////////////////////////////////////////
+
+func deferCheck() {
+	fil := createFile()
+	defer closeFile(fil)
+	writeFile(fil)
+	reader := bufio.NewReader(os.Stdin)
+	text, _ := reader.ReadString('\n')
+	fmt.Println(text)
+}
+
+func createFile() *os.File {
+	filename := "/Users/isibrahi/Downloads/Defertesting.txt"
+	fmt.Println("creating")
+	fil, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	return fil
+}
+
+func closeFile(fil *os.File) {
+	fmt.Println("Closing file")
+	fil.Close()
+	os.Remove("/Users/isibrahi/Downloads/Defertesting.txt")
+}
+
+func writeFile(fil *os.File) {
+	fmt.Println("writing")
+	fmt.Fprintln(fil, "The lazy fox jumps over quick brown dog")
+}
+
+///////////////////////////////////////////////////////////////
 func main() {
-	sortByFuncCheck()
+	deferCheck()
 }
