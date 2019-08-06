@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"sync"
@@ -844,7 +845,6 @@ func deferCheck() {
 	text, _ := reader.ReadString('\n')
 	fmt.Println(text)
 }
-
 func createFile() *os.File {
 	filename := "/Users/isibrahi/Downloads/Defertesting.txt"
 	fmt.Println("creating")
@@ -867,6 +867,40 @@ func writeFile(fil *os.File) {
 }
 
 ///////////////////////////////////////////////////////////////
+
+func allComplies(strList []string, f func(string) bool) bool {
+	for _, vstr := range strList {
+		if !f(vstr) {
+			fmt.Println("Not  number ", vstr)
+			return false
+		}
+	}
+	return true
+}
+
+func mapToComplies(strList []string, f func(string) string) []string {
+	newList := make([]string, len(strList))
+	for i, vstr := range strList {
+		newList[i] = f(vstr)
+	}
+	return newList
+}
+
+func checkModels(v string) bool {
+	regxp, _ := regexp.Compile("[0-9]+$")
+	if regxp.MatchString(v) {
+		return true
+	}
+	return false
+}
+
+func collectionFunctionCheck() {
+	cars := []string{"Bentley96", "Ferarri17", "Firebird", "Aston-Martin", "RollsRoyce47"}
+	fmt.Println("Are all by year models", allComplies(cars, checkModels))
+	fmt.Println(mapToComplies(cars, strings.ToUpper))
+}
+
+///////////////////////////////////////////////////////////////
 func main() {
-	deferCheck()
+	collectionFunctionCheck()
 }
