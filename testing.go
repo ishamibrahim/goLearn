@@ -901,6 +901,14 @@ func collectionFunctionCheck() {
 }
 
 ///////////////////////////////////////////////////////////////
+func timeFunctions() {
+	p := fmt.Println
+
+	now := time.Now()
+	p(now)
+	p(now.Format(time.RFC3339))
+}
+
 func main() {
-	collectionFunctionCheck()
+	timeFunctions()
 }
