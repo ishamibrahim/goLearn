@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Today is another day</title>
+    </head>
+
+    <body>
+        <h1>CITY CARS</h1>
+        <ul>
+            {{range $key, $element := .}}
+            <li>City {{$element.City.Name}} :  Car {{$element.Car.Manufacturer}}-{{$element.Car.Name}}</li>
+            {{end}}
+        </ul>
+        
+        <p><iframe src="https://media.giphy.com/media/5l3lJzA8zVMqc/source.gif" width="480" height="400" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></p>
+        <hr>
+        <p>May your dreams come true</p>
+        <p>&#169; Peace @ iamisham.com, 2020</p>
+    </body>
+</html>
