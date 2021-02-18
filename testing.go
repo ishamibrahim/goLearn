@@ -71,14 +71,10 @@ func printCSVTableData(inputData [][]string) {
 	for i := 0; i < lenData; i++ {
 		columnColorSlice = append(columnColorSlice, TableFgHiCyanColor)
 	}
-	fmt.Println("headerSlice", headerColorSlice)
-	fmt.Println("columnSlice", columnColorSlice)
-	fmt.Println("REACHED 1")
+
 	table.SetHeader(inputData[0])
 	table.SetHeaderColor(headerColorSlice...)
-	fmt.Println("REACHED 2")
 	table.SetColumnColor(columnColorSlice...)
-	fmt.Println("REACHED 3")
 	table.SetRowLine(true)
 	for ind, inputRow := range inputData {
 		fmt.Println("Inputs : ", inputRow)
